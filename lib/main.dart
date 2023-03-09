@@ -50,6 +50,7 @@ class MyHomePage extends StatelessWidget {
                   ..showSnackBar(
                     SnackBar(
                       content: Text(state.wasIncremented ? 'Incremented' : 'Decremented'),
+                      duration: const Duration(milliseconds: 600),
                     ),
                   );
               },
