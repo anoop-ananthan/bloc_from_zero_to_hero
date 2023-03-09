@@ -70,7 +70,14 @@ class SecondPage extends StatelessWidget {
                   child: const Icon(Icons.remove),
                 ),
               ],
-            )
+            ),
+            const SizedBox(height: 24),
+            ElevatedButton(
+              onPressed: () => context.read<CounterCubit>().reset(),
+              child: const Text(
+                "Reset",
+              ),
+            ),
           ],
         ),
       ),
