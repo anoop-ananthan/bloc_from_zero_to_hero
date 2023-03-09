@@ -2,12 +2,22 @@ import 'package:bloc_zero_to_hero/second_page.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:hydrated_bloc/hydrated_bloc.dart';
+import 'package:path_provider/path_provider.dart';
 
 import 'counter/cubit/counter_cubit.dart';
 import 'internet/cubit/internet_cubit.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  HydratedBloc.storage =
+      await HydratedStorage.build(storageDirectory: await getApplicationDocumentsDirectory());
+
   Connectivity connectivity = Connectivity();
+
+  Bloc.observer = AppBlocObserver();
+
   runApp(MyApp(connectivity: connectivity));
 }
 
@@ -42,6 +52,37 @@ class MyApp extends StatelessWidget {
   }
 }
 
+class AppBlocObserver extends BlocObserver {
+  @override
+  void onEvent(Bloc bloc, Object? event) {
+    super.onEvent(bloc, event);
+    debugPrint('onEvent\n$bloc\n$event\n');
+  }
+
+  @override
+  void onError(BlocBase bloc, Object error, StackTrace stackTrace) {
+    super.onError(bloc, error, stackTrace);
+  }
+
+  @override
+  void onChange(BlocBase bloc, Change change) {
+    super.onChange(bloc, change);
+    debugPrint('onChange\n$bloc\n$change\n');
+  }
+
+  @override
+  void onTransition(Bloc bloc, Transition transition) {
+    super.onTransition(bloc, transition);
+    debugPrint('onTransition\n$bloc\n$transition\n');
+  }
+
+  @override
+  void onCreate(BlocBase bloc) {
+    super.onCreate(bloc);
+    debugPrint('onCreate\n$bloc\n');
+  }
+}
+
 class MyHomePage extends StatelessWidget {
   const MyHomePage({super.key});
 
@@ -66,10 +107,8 @@ class MyHomePage extends StatelessWidget {
               },
               builder: (context, state) {
                 if (_isWifyConnected(state)) {
-                  context.read<CounterCubit>().increment();
                   return const InternetText('Wi-fi', color: Colors.green);
                 } else if (_isMobileConnected(state)) {
-                  context.read<CounterCubit>().decrement();
                   return const InternetText('Mobile', color: Colors.red);
                 } else if (_isDisconneected(state)) {
                   return const InternetText('Disconnected', color: Colors.grey);
